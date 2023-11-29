@@ -76,22 +76,24 @@ plt.show()
 st.pyplot(plt)
 
 st.subheader("Sentiment Distribution Over Time by Age Group")
+#Plotting the Sentiment Distribution Over Time by Age Group
 sentiments = ['negative', 'neutral', 'positive']
 
 plt.figure(figsize=(15, 5))
-
+# Loop through each sentiment, create a subplot for each
 for i, sentiment in enumerate(sentiments, 1):
     plt.subplot(1, 3, i)
     subset = df[df['sentiment'] == sentiment]
 
-    if not subset.empty:  # Check if the subset has any data
+    if not subset.empty:  # If the subset is not empty, create a count plot
         sns.countplot(data=subset, x='Time of Tweet', hue='Age of User')
-        plt.title(f'Tweets for {sentiment} sentiment')
-        if i == 3:  # Only show legend for the last plot to save space
+        plt.title(f'Tweets for {sentiment} sentiment'))# Create a countplot for 'Time of Tweet' categorized
+        if i == 3:  #   For the last subplot, add a legend; for others, remove the legend
             plt.legend(title='Age of User', loc='upper right')
         else:
             plt.legend().remove()
-    else:
+    else: 
+        # If the subset is empty, display a text message in the subplot
         plt.text(0.5, 0.5, f'No data for {sentiment} sentiment', horizontalalignment='center')
 
 plt.tight_layout()
@@ -99,15 +101,18 @@ plt.show()
 st.pyplot(plt)
 
 st.subheader("Tweets over time")
-sentiments = df['sentiment'].unique()
+# Plotting the Tweets over Time
+sentiments = df['sentiment'].unique()## Retrieve unique sentiment values from the 'sentiment' column of the DataFrame
 
 plt.figure(figsize=(20, 6))
-
+# Loop through each unique sentiment value
 for i, sentiment in enumerate(sentiments, 1):
     subset = df[df['sentiment'] == sentiment]
+     # Group the subset by 'Time of Tweet' and count the number of tweets in each group
     tweet_counts = subset.groupby('Time of Tweet').size()
 
     plt.subplot(1, len(sentiments), i)
+     #Plot the tweet counts as a pie chart
     tweet_counts.plot(kind='pie', autopct='%1.1f%%', startangle=140,
                       colors=['skyblue', 'lightgreen', 'lightcoral'])
     plt.title(f'Tweets Distribution for {sentiment.capitalize()} Sentiment')
@@ -119,13 +124,14 @@ st.pyplot(plt)
 
 st.subheader("Tweet Distribution by Top 10 Countries for Different Sentiments")
 sentiments = df['sentiment'].unique()
-
+# Setting up a figure with a dynamic height based on the number of sentiment categories
 plt.figure(figsize=(20, 5 * len(sentiments)))
-
+#Looping through each sentiment to create a separate plot
 for i, sentiment in enumerate(sentiments, 1):
     subset = df[df['sentiment'] == sentiment]
+     # Identifying the top 10 countries with the highest tweet counts for the current sentimen
     top_countries_subset = subset['Country'].value_counts().head(10).index
-
+     # Creating a subplot for each sentiment with appropriate dimensions
     plt.subplot(len(sentiments), 1, i)
     sns.countplot(data=subset, x='Country', order=top_countries_subset)
     plt.title(f'Number of Tweets by Top 10 Countries for {sentiment.capitalize()} Sentiment')
@@ -140,14 +146,18 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 # Handle missing values 
 df['text'] = df['text'].fillna('')
+# Initialize a CountVectorizer object with English stop words.
 cv = CountVectorizer(stop_words = 'english')
+# Apply the vectorizer to the 'text' column of the dataframe to convert text data into a numeric format.
 words = cv.fit_transform(df.text)
-
+#Sum the occurrences of each word in the corpus.
 sum_words = words.sum(axis=0)
-
+# Pair each word with its frequency in the corpus.
 words_freq = [(word, sum_words[0, i]) for word, i in cv.vocabulary_.items()]
+#Sort the word-frequency pairs in descending order of frequency.
 words_freq = sorted(words_freq, key = lambda x: x[1], reverse = True)
 
+#Convert the sorted word-frequency pairs into a DataFrame.
 frequency = pd.DataFrame(words_freq, columns=['word', 'freq'])
 
 frequency.head(30).plot(x='word', y='freq', kind='bar', figsize=(15, 7), color = 'blue')
@@ -256,3 +266,6 @@ wc = WordCloud(max_words=2000, width=1600, height=800, background_color='white')
 plt.imshow(wc, interpolation='bilinear')
 plt.axis('off')
 st.pyplot(plt)
+
+st.markdown("**Analysis:** The visual data analysis reveals a trend where tweets are mostly neutral, with lesser instances of positive and negative sentiments. When examining the tweet lengths, a significant number of tweet contain between 0 to 20 words. In terms of user , the age distribution is relatively even, suggesting broad engagement across age groups. Further analysis of sentiment-related tweet patterns indicates that younger users (0-20 years) tend to post negative tweets around noon, while also being the most active in the morning for neutral tweets. Interestingly, users aged 60-70 are more inclined to share positive tweets at midday. Overall, the distribution of tweets by sentiment remains fairly consistent throughout the day, with slight variations in frequency across different times.")
+
