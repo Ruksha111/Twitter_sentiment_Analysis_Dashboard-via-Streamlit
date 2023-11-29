@@ -87,7 +87,7 @@ for i, sentiment in enumerate(sentiments, 1):
 
     if not subset.empty:  # If the subset is not empty, create a count plot
         sns.countplot(data=subset, x='Time of Tweet', hue='Age of User')
-        plt.title(f'Tweets for {sentiment} sentiment'))# Create a countplot for 'Time of Tweet' categorized
+        plt.title(f'Tweets for {sentiment} sentiment')# Create a countplot for 'Time of Tweet' categorized
         if i == 3:  #   For the last subplot, add a legend; for others, remove the legend
             plt.legend(title='Age of User', loc='upper right')
         else:
